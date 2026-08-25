@@ -1,0 +1,115 @@
+schema_version: 1
+
+oda:
+  endpoint: https://oda-f9d5b415e8194a70b2e2b123027f8251-da11.data.digitalassistant.oci.oraclecloud.com/botsui/home
+
+# Resolved through OCI SDK discovery using profile apacanzset03.
+resources:
+  oda_instance_id: ocid1.odainstance.oc1.ap-sydney-1.amaaaaaajlkbyliael6y5dw2ehccve4pl4t6uz4q2qpgo3hbqzs7pbz4vr2q
+  skill_id: C33F2F40-3276-4479-9846-70005E67AFF8
+  assistant_id: 28C7ACB1-76B8-4EC6-8286-AF195BB2531B
+
+# Used by the supported skill export/import bundle workflow.
+bundles:
+  object_storage:
+    region: ap-sydney-1
+    namespace: sdncspltazsk
+    bucket: oda
+    compartment_id: ocid1.compartment.oc1..aaaaaaaadd4reahxbwpu3usth6y2j4uzclwknj76ento4q63pajpekn6qjvq
+
+skill:
+  name: OCI_Admin
+  version: "1.3"
+  platform_version: "26.04"
+  invocation: OCI Admin
+  description: OCI administration assistant for compute, monitoring, cost, backup, and support tasks.
+  intents:
+    - name: check_instance_status
+      description: Check a compute instance lifecycle state.
+      utterances: ["Is prod-web-01 running?", "Show VM status", "Check instance status"]
+      flow: {steps: [{type: send_message, text: "I can check an instance lifecycle state once the OCI Compute action is configured."}, {type: end_flow}]}
+    - name: start_instance
+      description: Request a confirmed compute start operation.
+      utterances: ["Start dev-app-01", "Start the development server"]
+      flow: {steps: [{type: send_message, text: "I will show the target instance and request confirmation before starting it."}, {type: end_flow}]}
+    - name: stop_instance
+      description: Request a confirmed compute stop operation.
+      utterances: ["Stop the test server", "Stop dev-app-01"]
+      flow: {steps: [{type: send_message, text: "I will show the target instance and request confirmation before stopping it."}, {type: end_flow}]}
+    - name: list_instances
+      description: List compute instances.
+      utterances: ["Show all instances in Sydney", "List my compute instances"]
+      flow: {steps: [{type: send_message, text: "I can list compute instances by compartment and region."}, {type: end_flow}]}
+    - name: check_cpu_usage
+      description: Retrieve CPU monitoring metrics.
+      utterances: ["What is CPU usage for prod-db?", "Show CPU usage"]
+      flow: {steps: [{type: send_message, text: "I can retrieve OCI Monitoring CPU metrics after the monitoring action is configured."}, {type: end_flow}]}
+    - name: check_storage_usage
+      description: Retrieve storage capacity metrics.
+      utterances: ["Which volumes are nearly full?", "Show storage usage"]
+      flow: {steps: [{type: send_message, text: "I can show volume or filesystem capacity metrics after the monitoring action is configured."}, {type: end_flow}]}
+    - name: view_costs
+      description: Retrieve cost and usage summary.
+      utterances: ["What did we spend this month?", "Show OCI costs"]
+      flow: {steps: [{type: send_message, text: "I can retrieve your OCI cost and usage summary."}, {type: end_flow}]}
+    - name: find_resource
+      description: Search OCI resources.
+      utterances: ["Find the load balancer for Rinnai portal", "Find an OCI resource"]
+      flow: {steps: [{type: send_message, text: "I can search OCI resources by name, type, and compartment."}, {type: end_flow}]}
+    - name: create_service_request
+      description: Create a support service request.
+      utterances: ["Create an SR for a database alert", "Open a support request"]
+      flow: {steps: [{type: send_message, text: "I will collect issue details before creating a service request."}, {type: end_flow}]}
+    - name: show_alarms
+      description: List active monitoring alarms.
+      utterances: ["Any critical alarms?", "Show active alarms"]
+      flow: {steps: [{type: send_message, text: "I can list active OCI Monitoring alarms."}, {type: end_flow}]}
+    - name: check_backup_status
+      description: Retrieve backup or job status.
+      utterances: ["Did last night’s backup succeed?", "Show the latest backup status"]
+      flow: {steps: [{type: send_message, text: "I can retrieve backup and job status once the backup action is configured."}, {type: end_flow}]}
+    - name: help
+      description: Explain supported OCI administration actions.
+      utterances: ["What can you do?", "OCI admin help", "Help"]
+      flow: {steps: [{type: send_message, text: "I can help with instances, CPU and storage, costs, resources, alarms, backups, and support requests."}, {type: end_flow}]}
+  known_failure_prevention:
+    failure: "System.InvokeFlow: the mapped flow cannot be executed because it has no states."
+    guard: "Every intent flow must include send_message and end_flow before train/publish."
+
+assistant:
+  name: test
+  version: "1.3"
+  skill: OCI_Admin
+  skill_version: "1.3"
+  routing_utterances: ["What can you do?", "Check instance status", "OCI admin help"]
+
+channel:
+  name: demotest
+  id: a5c83739-7a61-4d99-bb3b-295ce0630cc8
+
+# Set the exact, verified paths for your ODA service release before `deploy --apply`.
+# `deploy` without --apply is safe: it writes the signed-REST request plan only.
+deployment:
+  operations: []
+
+# Discovery is always read-only (signed GET). Add verified routes for the ODA
+# service release. `{assistant_id}` and `{channel_id}` are expanded by the CLI.
+discovery:
+  paths: []
+
+# Local command logs can be archived with `oda-admin export-logs`. Upload is
+# opt-in (`--upload`) and needs a bucket and Object Storage namespace.
+logging:
+  object_storage:
+    namespace: ""
+    bucket: ""
+    prefix: oda-admin/logs
+
+# ODA service-side Insights exports for Oracle Analytics Cloud. The bucket is
+# existing-only: `oda export-insights` uploads objects but never creates it.
+insights:
+  max_file_length: 100000000
+  object_storage:
+    namespace: sdncspltazsk
+    bucket: oda
+    prefix: insights

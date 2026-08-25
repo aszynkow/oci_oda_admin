@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "oci-oda-admin"
+version = "0.1.0"
+description = "CLI and Python library for administering Oracle Digital Assistant with the OCI Python SDK"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "oci>=2.184.0",
+  "PyYAML>=6.0.2",
+  "requests>=2.32.0",
+  "typer>=0.12.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.scripts]
+oda-admin = "oci_oda_admin.cli:app"
+oda = "oci_oda_admin.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/oci_oda_admin"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

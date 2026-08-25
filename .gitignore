@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+generated/
+logs/
+exports/
+*.py[cod]
+.env
+configs/*.credentials.json
+*.pem
+*.key
+coverage.xml
